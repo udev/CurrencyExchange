@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Currency Exchange</string>
+    <string name="amount">Amount</string>
+    <string name="convert_to" formatted="true">Convert %1$s to…</string>
+    <string name="currency_code">Currency Code</string>
+    <string name="eur">EUR</string>
+    <string name="clear_currency_button">clear currency code button</string>
+    <string name="uh_oh">Uh oh…</string>
+    <string name="dismiss">Dismiss</string>
+</resources>

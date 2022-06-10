@@ -1,0 +1,4 @@
+buildConfigField "String", "BASE_URL", "\"https://api.apilayer.com/fixer/fixer/\""
+
+// create build config field with value from keystore
+buildConfigField "String", "FIXER_API_KEY", "\"${ext.keystoreProperties['fixer.debug.key']}\""
