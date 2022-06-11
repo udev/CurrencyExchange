@@ -16,10 +16,9 @@ typealias Fluctuations = HashMap<CurrencyCode, Fluctuation>
 
 fun CurrencyCode.getDisplayCurrencySign(): String =
     this.getCurrencySign().let {
-        if (it.containsSpecialCharacter()) {
-            it
-        } else {
-            "$it "
+        when {
+            it.contains(Regex("[a-zA-Z]")) -> "$it "
+            else -> it
         }
     }
 

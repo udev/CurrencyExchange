@@ -6,9 +6,9 @@ class TypesKtTest {
     @Test
     fun getDisplayCurrencySign() {
         val decoratedDollarSign = "USD".getDisplayCurrencySign()
-        assert(decoratedDollarSign == "$") { "expected = '\$', actual = there should be space following the symbol '$decoratedDollarSign'" }
+        assert(decoratedDollarSign == "$") { "expected = '\$', actual = '$decoratedDollarSign'" }
         val decoratedMexicanDollar = "MXN".getDisplayCurrencySign()
-        assert(decoratedMexicanDollar == "MX$ ") { "expected = 'MX\$ ', actual = there should be space following the symbol '$decoratedMexicanDollar'" }
+        assert(decoratedMexicanDollar == "MX$ ") { "expected = 'MX\$ ', actual = '$decoratedMexicanDollar'" }
     }
 
     @Test
