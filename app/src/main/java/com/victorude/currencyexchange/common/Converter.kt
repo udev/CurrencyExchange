@@ -10,8 +10,11 @@ import java.time.Instant
 import java.time.format.DateTimeParseException
 
 class TimestampConverter : Converter<ResponseBody, Instant> {
+
+    private val gson: Gson = Gson()
+
     override fun convert(value: ResponseBody): Instant? {
-        return Gson().fromJson(value.string(), JsonElement::class.java)?.asJsonObject?.let {
+        return gson.fromJson(value.string(), JsonElement::class.java)?.asJsonObject?.let {
             val longTime = it.get("timestamp").asLong
             try {
                 Instant.parse(longTime.toString())
