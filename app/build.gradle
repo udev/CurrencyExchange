@@ -16,6 +16,8 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
+    testBuildType "staging"
+
     signingConfigs {
         release {
             storeFile file('/Users/victorude/aspiration.release.key')
@@ -33,7 +35,31 @@ android {
         versionCode 1
         versionName "1.0"
 
+        // Specifies the application ID for the test APK.
+        testApplicationId = 'com.test.victorude'
+
+        // Specifies the fully-qualified class name of the test instrumentation
+        // runner.
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // The following argument makes the Android Test Orchestrator run its
+        // "pm clear" command after each test invocation. This command ensures
+        // that the app's state is completely cleared between tests.
+        testInstrumentationRunnerArguments clearPackageData: 'true'
+
+        // If set to true, enables the instrumentation class to start and stop profiling.
+        // If set to false (default), profiling occurs the entire time the instrumentation
+        // class is running.
+        testHandleProfiling = true
+
+        // If set to true, indicates that the Android system should run the instrumentation
+        // class as a functional test. The default value is false.
+        testFunctionalTest = true
+
+        testOptions {
+            execution 'ANDROIDX_TEST_ORCHESTRATOR'
+        }
+
         vectorDrawables {
             useSupportLibrary true
         }
@@ -50,6 +76,7 @@ android {
         }
         staging {
             initWith release
+            minifyEnabled false
             debuggable true
 
             ext.keystoreProperties = keystoreProperties
@@ -80,24 +107,35 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
+    useLibrary 'android.test.runner'
+    useLibrary 'android.test.base'
+    useLibrary 'android.test.mock'
 }
 
 dependencies {
+
+    // Test dependencies
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'androidx.test.ext:junit:1.1.3'
+    testImplementation 'androidx.test.ext:junit-ktx:1.1.3'
+
+    // Test rules and transitive dependencies:
+    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
+    // Needed for createComposeRule, but not createAndroidComposeRule:
+    androidTestImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
+    // orchestrator
+    androidTestImplementation 'androidx.test:orchestrator:1.4.1'
+
+    // Assertion from https://truth.dev/
+    androidTestImplementation 'com.google.truth:truth:' + rootProject.truthVersion
+
+    // App dependencies
     implementation 'androidx.core:core-ktx:1.8.0'
     implementation "androidx.compose.ui:ui:$compose_version"
     implementation 'androidx.compose.material3:material3:1.0.0-alpha13'
     implementation "androidx.compose.ui:ui-tooling-preview:$compose_version"
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.1'
     implementation 'androidx.activity:activity-compose:1.4.0'
-    testImplementation 'junit:junit:4.13.2'
-    testImplementation 'org.robolectric:robolectric:4.8.1'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_version"
-    androidTestImplementation("androidx.ui:ui-test:$compose_version")
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_version"
     implementation 'androidx.lifecycle:lifecycle-viewmodel-compose:2.4.1'
     implementation 'androidx.navigation:navigation-compose:2.4.2'
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'

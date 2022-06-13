@@ -1,6 +1,7 @@
 buildscript {
     ext {
         compose_version = '1.2.0-beta03'
+        androidx_test_version = '1.4.0'
     }
     dependencies {
         classpath 'com.google.dagger:hilt-android-gradle-plugin:2.42'
@@ -16,4 +17,8 @@ plugins {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
+}
+
+ext {
+    truthVersion = "1.1.3"
 }
