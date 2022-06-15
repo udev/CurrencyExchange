@@ -4,6 +4,7 @@ import com.victorude.currencyexchange.common.Amount
 import com.victorude.currencyexchange.common.CurrencyCode
 import com.victorude.currencyexchange.common.HistoricalDate
 import com.victorude.currencyexchange.model.*
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
 
 class FixerRepository @Inject constructor(

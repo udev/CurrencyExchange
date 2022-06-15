@@ -12,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -28,7 +30,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.victorude.currencyexchange.R
 import com.victorude.currencyexchange.common.*
-import com.victorude.currencyexchange.model.LatestRatesResponse
 import com.victorude.currencyexchange.ui.theme.CurrencyExchangeTheme
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.CoroutineScope
@@ -72,9 +73,6 @@ fun Root(
         }
     }
 
-    LaunchedEffect(messageList) {
-    }
-
     AlertDialog(messages = messageList.messages) {
         viewModel.clearMessages()
     }
@@ -86,12 +84,20 @@ fun SupportedSymbols(
     viewModel: CurrencyViewmodel = hiltViewModel()
 ) {
     val symbolsState = viewModel.symbols
+    val filter = viewModel.filter
+
+    LaunchedEffect(viewModel) {
+        viewModel.refresh()
+    }
 
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         FilterSearch()
-        SupportedSymbolList(symbols = symbolsState) {
+        SupportedSymbolList(
+            symbols = symbolsState,
+            filter = filter
+        ) {
             navController.navigate("rates/${it.key}")
         }
     }
@@ -194,22 +200,26 @@ fun FilterSearch(
 
 @Composable
 fun SupportedSymbolList(
-    viewModel: CurrencyViewmodel = hiltViewModel(),
     symbols: CurrencyViewmodel.SymbolsState,
-    rates: LatestRatesResponse? = null,
+    rates: CurrencyViewmodel.RatesState = CurrencyViewmodel.RatesState(),
+    filter: String = "",
     onClick: (Symbol) -> Unit = {}
 ) {
-    val filterState = viewModel.filter
+    LaunchedEffect(symbols, rates) {
+
+    }
 
     Column(
-        modifier = Modifier.verticalScroll(rememberScrollState())
+        modifier = Modifier
+            .verticalScroll(rememberScrollState())
+            .semantics { testTag = "symbolList" }
     ) {
         symbols.symbolList
-            .filter { it.key.contains(filterState) || it.value.uppercase().contains(filterState) }
+            .filter { it.key.contains(filter) || it.value.uppercase().contains(filter) }
             .forEach { symbol ->
                 SymbolListItem(
                     symbol = symbol,
-                    rate = rates?.rates?.get(symbol.key)
+                    rate = rates.rates?.rates?.get(symbol.key)
                 ) { onClick(it) }
             }
         Spacer(Modifier.height(500.dp))
@@ -285,7 +295,12 @@ fun ConvertedCurrencyList(
 ) {
     val symbolsState = viewModel.symbols
     val ratesState = viewModel.rates
+    val filter = viewModel.filter
     val convertState = viewModel.convertResult
+
+    LaunchedEffect(viewModel) {
+        viewModel.refresh()
+    }
 
     if (convertState.isValid) {
         val result = convertState.convertResult!!
@@ -317,7 +332,8 @@ fun ConvertedCurrencyList(
     } else {
         SupportedSymbolList(
             symbols = symbolsState,
-            rates = ratesState.rates
+            rates = ratesState,
+            filter = filter
         ) {
             viewModel.convert(
                 from = fromCurrency,

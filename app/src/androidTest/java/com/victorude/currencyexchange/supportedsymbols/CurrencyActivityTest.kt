@@ -1,33 +1,46 @@
 package com.victorude.currencyexchange.supportedsymbols
 
-import androidx.compose.ui.test.assertIsDisplayed
+import androidx.activity.compose.setContent
+import androidx.activity.viewModels
+import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import androidx.compose.ui.test.onNodeWithText
-import androidx.compose.ui.test.performTextInput
-import androidx.test.ext.junit.runners.AndroidJUnit4
 import com.victorude.currencyexchange.feature.supportedsymbols.CurrencyActivity
+import com.victorude.currencyexchange.feature.supportedsymbols.CurrencyViewmodel
+import com.victorude.currencyexchange.feature.supportedsymbols.Root
+import dagger.hilt.android.testing.HiltAndroidRule
+import dagger.hilt.android.testing.HiltAndroidTest
+import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
-import org.junit.runner.RunWith
 
-@RunWith(AndroidJUnit4::class)
+@HiltAndroidTest
 class CurrencyActivityTest {
+    // interesting approach via: https://medium.com/nerd-for-tech/writing-an-integration-test-with-jetpack-compose-and-dagger-hilt-8ef888c1a23d
+    @get:Rule(order = 1)
+    var hiltRule = HiltAndroidRule(this)
 
-    @get:Rule
+    @get:Rule(order = 2)
     val composeTestRule = createAndroidComposeRule<CurrencyActivity>()
-    // use createAndroidComposeRule<YourActivity>() if you need access to an activity
-    // using createComposeRule() fails to resume the activity
+
+    @Before
+    fun setup() {
+        hiltRule.inject()
+        composeTestRule.activity.setContent {
+            Root(composeTestRule.activity.viewModels<CurrencyViewmodel>().value)
+        }
+    }
 
     @Test
-    fun myTest() {
-        // Start the app
-//        composeTestRule.setContent {
-//            CurrencyExchangeTheme {
-//                Root()
-//            }
-//        }
-
-        composeTestRule.onNodeWithText("Currency Code").performTextInput("EUR")
-        composeTestRule.onNodeWithText("EUR | Euro").assertIsDisplayed()
+    fun filterSymbolListTest() {
+        composeTestRule.apply {
+            waitUntil(1000) {
+                onNodeWithTag("symbolList").onChildren().fetchSemanticsNodes().size > 1
+            }
+            onNodeWithText("Currency Code").performTextInput("EUR")
+            waitUntil(1000) {
+                onNodeWithTag("symbolList").onChildren().fetchSemanticsNodes().size == 1
+            }
+            onNodeWithText("EUR").assertIsDisplayed()
+        }
     }
 }

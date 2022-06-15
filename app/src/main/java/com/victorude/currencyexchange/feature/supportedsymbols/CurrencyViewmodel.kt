@@ -38,10 +38,6 @@ class CurrencyViewmodel @Inject constructor(
     var filter by mutableStateOf("")
         private set
 
-    init {
-        refresh()
-    }
-
     private fun getSymbols() {
         symbols = symbols.copy(
             loading = true,
@@ -226,12 +222,13 @@ class CurrencyViewmodel @Inject constructor(
         )
     }
 
-    private fun refresh() {
+    fun refresh() {
         getSymbols()
         getLatestRates("EUR", listOf())
     }
 
     private fun addMessage(message: String = OOPS) {
+        if (messageState.messages.contains(message)) return
         messageState = messageState.copy(
             messages = messageState.messages.apply { add(message) }
         )
@@ -254,7 +251,9 @@ class CurrencyViewmodel @Inject constructor(
 
     data class MessageState(
         val messages: MutableList<String>
-    )
+    ){
+
+}
 
     companion object {
         const val OOPS = "Oops! Something went wrong!" // should definitely be a string resource
