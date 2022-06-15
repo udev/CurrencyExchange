@@ -135,6 +135,7 @@ fun RatesAndConversion(
             modifier = Modifier
                 .padding(16.dp)
                 .fillMaxWidth()
+                .semantics { testTag = "amountField" }
         )
         Column {
             OutlinedTextField(

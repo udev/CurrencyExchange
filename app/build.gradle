@@ -69,6 +69,7 @@ android {
     buildTypes {
         release {
             minifyEnabled true
+            shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
 
             ext.keystoreProperties = keystoreProperties
@@ -77,6 +78,7 @@ android {
         staging {
             initWith release
             minifyEnabled false
+            shrinkResources false
             debuggable true
 
             ext.keystoreProperties = keystoreProperties

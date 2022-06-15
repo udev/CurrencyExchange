@@ -1,12 +1,9 @@
-package com.victorude.currencyexchange.supportedsymbols
+package com.victorude.currencyexchange.feature.supportedsymbols
 
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.ui.test.*
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
-import com.victorude.currencyexchange.feature.supportedsymbols.CurrencyActivity
-import com.victorude.currencyexchange.feature.supportedsymbols.CurrencyViewmodel
-import com.victorude.currencyexchange.feature.supportedsymbols.Root
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import org.junit.Before
@@ -33,14 +30,21 @@ class CurrencyActivityTest {
     @Test
     fun filterSymbolListTest() {
         composeTestRule.apply {
-            waitUntil(1000) {
+            waitUntil {
                 onNodeWithTag("symbolList").onChildren().fetchSemanticsNodes().size > 1
             }
             onNodeWithText("Currency Code").performTextInput("EUR")
-            waitUntil(1000) {
+            waitUntil {
                 onNodeWithTag("symbolList").onChildren().fetchSemanticsNodes().size == 1
             }
+            onNodeWithText("EUR").printToLog("WTF")
             onNodeWithText("EUR").assertIsDisplayed()
+            onNodeWithTag("symbolList").onChildren().onFirst().apply {
+                assertIsDisplayed()
+                assertTextContains(value = "EUR", substring = true)
+                performClick()
+            }
+            onNodeWithTag("amountField").assertIsDisplayed()
         }
     }
 }
