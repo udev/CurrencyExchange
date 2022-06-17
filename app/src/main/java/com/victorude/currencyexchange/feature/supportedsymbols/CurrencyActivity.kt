@@ -109,18 +109,14 @@ fun RatesAndConversion(
     currencyCode: CurrencyCode
 ) {
     val scope = rememberCoroutineScope()
-    var amount by remember { mutableStateOf("1") }
+    var amount by remember { mutableStateOf("") }
     var toCurrency by remember { mutableStateOf("") }
 
-    fun getLatestRates() =
+    fun delayApplyFilter() =
         CoroutineScope(Dispatchers.IO).launch {
             scope.launch { viewModel.applyFilter(toCurrency) }
             delay(3000)
-            viewModel.clearConversions()
-            viewModel.getLatestRates(
-                base = currencyCode,
-                listOf()
-            )
+//            viewModel.clearConversions()
         }
 
     Column {
@@ -130,7 +126,7 @@ fun RatesAndConversion(
             label = { Text(stringResource(R.string.amount)) },
             onValueChange = {
                 amount = it.toAmountOrOne()
-                getLatestRates()
+                delayApplyFilter()
             },
             modifier = Modifier
                 .padding(16.dp)
@@ -144,7 +140,7 @@ fun RatesAndConversion(
                 label = { Text(stringResource(R.string.convert_to, currencyCode)) },
                 onValueChange = {
                     toCurrency = it.toCurrencyCode()
-                    getLatestRates()
+                    delayApplyFilter()
                 },
                 enabled = true,
                 modifier = Modifier
@@ -154,7 +150,7 @@ fun RatesAndConversion(
         }
         ConvertedCurrencyList(
             fromCurrency = currencyCode,
-            amount = amount.toDouble()
+            amount = amount.toAmountOrOne().toDouble()
         )
     }
 }

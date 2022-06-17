@@ -44,16 +44,12 @@ fun String.toCurrencyCode() =
         .take(3)
 
 fun String.toAmountOrOne(): String =
-    when {
-        isEmpty() -> {
-            "1"
-        }
-
-        else -> {
-            this.trim()
-                .replace(Regex("[^0-9]"), "")
-                .toInt()
-                .coerceAtLeast(1)
-                .toString()
-        }
+    try {
+        this.trim()
+            .replace(Regex("[^0-9]"), "")
+            .toInt()
+            .toString()
+    } catch (e: NumberFormatException ) {
+        e.printStackTrace()
+        "1"
     }
